@@ -1,0 +1,20 @@
+on:
+  push:
+  pull_request:
+
+name: Presubmit Checks
+
+jobs:
+  lint:
+    name: Run presubmit.sh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libgtest-dev libgmock-dev clang-tidy-6.0
+          pip install cpplint
+      - name: Run presubmit.sh script
+        run: |
+          ./presubmit.sh
