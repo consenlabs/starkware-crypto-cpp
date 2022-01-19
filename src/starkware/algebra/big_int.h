@@ -13,10 +13,14 @@
 #include "starkware/utils/error_handling.h"
 #include "starkware/utils/prng.h"
 
+#include "boost/multiprecision/cpp_int.hpp"
+
+using uint128_t = boost::multiprecision::uint128_t;
+
 namespace starkware {
 
-static constexpr inline __uint128_t Umul128(uint64_t x, uint64_t y) {
-  return static_cast<__uint128_t>(x) * static_cast<__uint128_t>(y);
+static inline uint128_t Umul128(uint64_t x, uint64_t y) {
+  return static_cast<uint128_t>(x) * static_cast<uint128_t>(y);
 }
 
 template <size_t N>
@@ -48,7 +52,7 @@ class BigInt {
     Multiplies two BigInt<N> numbers, this and other. Returns the result as a
     BigInt<2*N>.
   */
-  constexpr BigInt<2 * N> operator*(const BigInt& other) const;
+  BigInt<2 * N> operator*(const BigInt& other) const;
 
   /*
     Multiplies two BigInt<N> numbers modulo a third.
@@ -94,13 +98,13 @@ class BigInt {
     Typically used after a Montgomery reduction which produces an output that
     satisfies the range requirement above.
   */
-  static constexpr BigInt ReduceIfNeeded(const BigInt& x, const BigInt& target);
+  static BigInt ReduceIfNeeded(const BigInt& x, const BigInt& target);
 
   /*
     Calculates x*y/2^256 mod modulus, assuming that montgomery_mprime is
     (-(modulus^-1)) mod 2^64. Assumes that modulus.NumLeadingZeros() > 0.
   */
-  static constexpr BigInt MontMul(
+  static BigInt MontMul(
       const BigInt& x, const BigInt& y, const BigInt& modulus, uint64_t montgomery_mprime);
 
   constexpr bool operator==(const BigInt& other) const;
@@ -116,7 +120,7 @@ class BigInt {
   /*
     Returns the number of leading zero's.
   */
-  constexpr size_t NumLeadingZeros() const;
+  size_t NumLeadingZeros() const;
 
  private:
   std::array<uint64_t, N> value_;

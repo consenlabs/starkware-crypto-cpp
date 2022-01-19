@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "starkware/utils/math.h"
+#include "starkware/utils/support.h"
 
 namespace starkware {
 
@@ -36,8 +37,8 @@ constexpr std::pair<BigInt<N>, bool> BigInt<N>::Add(const BigInt& a, const BigIn
   BigInt r{0};
 
   for (size_t i = 0; i < N; ++i) {
-    __uint128_t res = static_cast<__uint128_t>(a[i]) + b[i] + carry;
-    carry = (res >> 64) != static_cast<__uint128_t>(0);
+    uint128_t res = static_cast<uint128_t>(a[i]) + b[i] + carry;
+    carry = (res >> 64) != static_cast<uint128_t>(0);
     r[i] = static_cast<uint64_t>(res);
   }
 
@@ -45,7 +46,7 @@ constexpr std::pair<BigInt<N>, bool> BigInt<N>::Add(const BigInt& a, const BigIn
 }
 
 template <size_t N>
-constexpr BigInt<2 * N> BigInt<N>::operator*(const BigInt<N>& other) const {
+BigInt<2 * N> BigInt<N>::operator*(const BigInt<N>& other) const {
   constexpr auto kResSize = 2 * N;
   BigInt<kResSize> final_res = BigInt<kResSize>::Zero();
   // Multiply this by other using long multiplication algorithm.
@@ -55,7 +56,7 @@ constexpr BigInt<2 * N> BigInt<N>::operator*(const BigInt<N>& other) const {
       // For M == UINT64_MAX, we have: a*b+c+d <= M*M + 2M = (M+1)^2 - 1 ==
       // UINT128_MAX. So we can do a multiplication and an addition without an
       // overflow.
-      __uint128_t res = Umul128((*this)[j], other[i]) + final_res[i + j] + carry;
+      uint128_t res = Umul128((*this)[j], other[i]) + final_res[i + j] + carry;
       carry = gsl::narrow_cast<uint64_t>(res >> 64);
       final_res[i + j] = gsl::narrow_cast<uint64_t>(res);
     }
@@ -93,8 +94,8 @@ constexpr std::pair<BigInt<N>, bool> BigInt<N>::Sub(const BigInt& a, const BigIn
   BigInt r{};
 
   for (size_t i = 0; i < N; ++i) {
-    __uint128_t res = static_cast<__uint128_t>(a[i]) - b[i] - carry;
-    carry = (res >> 127) != static_cast<__uint128_t>(0);
+    uint128_t res = static_cast<uint128_t>(a[i]) - b[i] - carry;
+    carry = (res >> 127) != static_cast<uint128_t>(0);
     r[i] = static_cast<uint64_t>(res);
   }
 
@@ -166,20 +167,20 @@ constexpr bool BigInt<N>::operator==(const BigInt<N>& other) const {
 }
 
 template <size_t N>
-constexpr BigInt<N> BigInt<N>::ReduceIfNeeded(const BigInt<N>& x, const BigInt<N>& target) {
+BigInt<N> BigInt<N>::ReduceIfNeeded(const BigInt<N>& x, const BigInt<N>& target) {
   ASSERT(target.NumLeadingZeros() > 0, "target must have at least one leading zero.");
   return (x >= target) ? x - target : x;
 }
 
 template <size_t N>
-constexpr BigInt<N> BigInt<N>::MontMul(
+BigInt<N> BigInt<N>::MontMul(
     const BigInt& x, const BigInt& y, const BigInt& modulus, uint64_t montgomery_mprime) {
   BigInt<N> res{};
   ASSERT(modulus.NumLeadingZeros() > 0, "We require at least one leading zero in the modulus");
   ASSERT(y < modulus, "y is supposed to be smaller then the modulus");
   ASSERT(x < modulus, "x is supposed to be smaller then the modulus.");
   for (size_t i = 0; i < N; ++i) {
-    __uint128_t temp = Umul128(x[i], y[0]) + res[0];
+    uint128_t temp = Umul128(x[i], y[0]) + res[0];
     uint64_t u_i = gsl::narrow_cast<uint64_t>(temp) * montgomery_mprime;
     uint64_t carry1 = 0, carry2 = 0;
 
@@ -203,7 +204,7 @@ constexpr BigInt<N> BigInt<N>::MontMul(
 }
 
 template <size_t N>
-constexpr size_t BigInt<N>::NumLeadingZeros() const {
+size_t BigInt<N>::NumLeadingZeros() const {
   int i = value_.size() - 1;
   size_t res = 0;
 

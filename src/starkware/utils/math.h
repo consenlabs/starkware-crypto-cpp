@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "starkware/utils/error_handling.h"
+#include "starkware/utils/support.h"
 
 namespace starkware {
 
@@ -18,7 +19,7 @@ constexpr uint64_t inline Pow2(uint64_t n) {
 /*
   Returns floor(Log_2(n)), n must be > 0.
 */
-constexpr size_t inline Log2Floor(const uint64_t n) {
+size_t inline Log2Floor(const uint64_t n) {
   ASSERT(n != 0, "log2 of 0 is undefined");
   static_assert(sizeof(long long) == 8, "It is assumed that long long is 64bits");  // NOLINT
   return 63 - __builtin_clzll(n);

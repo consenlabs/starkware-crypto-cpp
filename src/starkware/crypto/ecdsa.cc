@@ -21,7 +21,7 @@ Signature SignEcdsa(
   const auto& alpha = GetEcConstants().k_alpha;
   const auto& curve_order = GetEcConstants().k_order;
   constexpr auto upper_bound = 0x800000000000000000000000000000000000000000000000000000000000000_Z;
-  static_assert(upper_bound <= PrimeFieldElement::kModulus);
+  ASSERT(upper_bound <= PrimeFieldElement::kModulus, "upper_bound <= PrimeFieldElement::kModulus");
   ASSERT(upper_bound <= curve_order, "Unexpected curve size.");
 
   ASSERT(z != PrimeFieldElement::Zero(), "Message cannot be zero.");
@@ -71,7 +71,9 @@ bool VerifyEcdsa(
   const auto rw = PrimeFieldElement::ValueType::MulMod(
       r.ToStandardForm(), w.ToStandardForm(), GetEcConstants().k_order);
   const EcPointT rw_q = public_key.ConvertTo<FractionFieldElementT>().MultiplyByScalar(rw, alpha);
-  return (zw_g + rw_q).x.ToBaseFieldElement() == r || (zw_g - rw_q).x.ToBaseFieldElement() == r;
+  bool result = (zw_g + rw_q).x.ToBaseFieldElement() == r || (zw_g - rw_q).x.ToBaseFieldElement() == r;
+  printf("");
+  return result;
 }
 
 bool VerifyEcdsaPartialKey(

@@ -43,7 +43,7 @@ class PrimeFieldElement {
         MontgomeryMul(ValueType(val), kMontgomeryRSquared));
   }
 
-  static constexpr PrimeFieldElement FromBigInt(const ValueType& val) {
+  static PrimeFieldElement FromBigInt(const ValueType& val) {
     return PrimeFieldElement(
         // Note that because MontgomeryMul divides by r we need to multiply by r^2 here.
         MontgomeryMul(val, kMontgomeryRSquared));
@@ -115,7 +115,7 @@ class PrimeFieldElement {
  private:
   explicit constexpr PrimeFieldElement(ValueType val) : value_(val) {}
 
-  static constexpr ValueType MontgomeryMul(const ValueType& x, const ValueType& y) {
+  static ValueType MontgomeryMul(const ValueType& x, const ValueType& y) {
     return ValueType::MontMul(x, y, kModulus, kMontgomeryMPrime);
   }
 

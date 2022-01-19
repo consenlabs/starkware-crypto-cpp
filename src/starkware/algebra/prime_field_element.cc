@@ -6,7 +6,7 @@ PrimeFieldElement PrimeFieldElement::RandomElement(Prng* prng) {
   constexpr size_t kMostSignificantLimb = ValueType::LimbCount() - 1;
   static_assert(
       kModulus[kMostSignificantLimb] != 0, "We assume kModulus[kMostSignificantLimb] is not zero");
-  constexpr uint64_t kBitsMask = (Pow2(Log2Floor(kModulus[kMostSignificantLimb]) + 1)) - 1;
+  uint64_t kBitsMask = (Pow2(Log2Floor(kModulus[kMostSignificantLimb]) + 1)) - 1;
 
   PrimeFieldElement random_element = PrimeFieldElement::Zero();
   do {
