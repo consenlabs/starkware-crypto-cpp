@@ -1,6 +1,6 @@
 add_subdirectory(ffi)
 
-add_library(crypto elliptic_curve_constants.cc pedersen_hash.cc ecdsa.cc)
+add_library(crypto elliptic_curve_constants.cc pedersen_hash.cc ecdsa.cc eckey.h eckey.cc)
 target_link_libraries(crypto algebra)
 
 add_executable(elliptic_curve_constants_test elliptic_curve_constants_test.cc)

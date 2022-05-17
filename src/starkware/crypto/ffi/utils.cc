@@ -31,4 +31,22 @@ void Serialize(const ValueType& val, const gsl::span<gsl::byte> span_out) {
   }
 }
 
+
+void SerializePubkey(const EcPoint<PrimeFieldElement>& pubkey, const gsl::span<gsl::byte> span_out) {
+    const size_t N = ValueType::LimbCount();
+    ASSERT(span_out.size() == 2*N * sizeof(uint64_t), "Span size mismatches BigInt size.");
+
+    const auto x_coor = pubkey.x.ToStandardForm();
+    for (size_t i = 0; i < N; ++i) {
+        uint64_t limb = x_coor[i];
+        gsl::copy(gsl::byte_span(limb), span_out.subspan(i * sizeof(uint64_t), sizeof(uint64_t)));
+    }
+
+    const auto y_coor = pubkey.y.ToStandardForm();
+    for (size_t i = 0; i < N; ++i) {
+        uint64_t limb = y_coor[i];
+        gsl::copy(gsl::byte_span(limb), span_out.subspan((i + N) * sizeof(uint64_t), sizeof(uint64_t)));
+    }
+}
+
 }  // namespace starkware

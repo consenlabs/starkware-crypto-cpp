@@ -4,7 +4,7 @@
 #include <cstddef>
 
 #include "starkware/crypto/pedersen_hash.h"
-
+#include "starkware/algebra/elliptic_curve.h"
 #include "third_party/gsl/gsl-lite.hpp"
 
 namespace starkware {
@@ -25,6 +25,8 @@ ValueType Deserialize(const gsl::span<const gsl::byte> span);
   Serializes a BigInt (PrimeFieldElement::ValueType) to a byte span.
 */
 void Serialize(const ValueType& val, const gsl::span<gsl::byte> span_out);
+
+void SerializePubkey(const EcPoint<PrimeFieldElement>& pubkey, const gsl::span<gsl::byte> span_out);
 
 }  // namespace starkware
 
