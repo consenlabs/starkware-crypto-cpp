@@ -27,12 +27,39 @@ namespace starkware {
 
     }  // namespace
 
+    extern "C" int SeckeyValidate(const gsl::byte private_key[kElementSize], gsl::byte out[kElementSize]) {
+        try {
+            const auto bytes = Deserialize(gsl::make_span(private_key, kElementSize));
+            auto is_valid =  SeckeyValidate(bytes);
+            return is_valid ? 0 : 1;
+        } catch (const std::exception &e) {
+            return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
+        } catch (...) {
+            return HandleError("Unknown c++ exception.", gsl::make_span(out, kOutBufferSize));
+        }
+//        return 0;
+    }
+
     extern "C" int SeckeyNegate(
             const gsl::byte private_key[kElementSize], gsl::byte out[kElementSize]) {
         try {
             const auto bytes = Deserialize(gsl::make_span(private_key, kElementSize));
             auto prv_key = SeckeyNegate(bytes);
-            Serialize(prv_key.ToStandardForm(), gsl::make_span(out, kElementSize));
+            Serialize(prv_key, gsl::make_span(out, kElementSize));
+        } catch (const std::exception &e) {
+            return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
+        } catch (...) {
+            return HandleError("Unknown c++ exception.", gsl::make_span(out, kOutBufferSize));
+        }
+        return 0;
+    }
+
+    extern "C" int SeckeyInvert(
+            const gsl::byte private_key[kElementSize], gsl::byte out[kElementSize]) {
+        try {
+            const auto bytes = Deserialize(gsl::make_span(private_key, kElementSize));
+            auto prv_key = SeckeyInvert(bytes);
+            Serialize(prv_key, gsl::make_span(out, kElementSize));
         } catch (const std::exception &e) {
             return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
         } catch (...) {
@@ -49,7 +76,7 @@ namespace starkware {
             const auto other_key_bytes = Deserialize(gsl::make_span(other_key, kElementSize));
 
             auto new_prv_key = SeckeyTweakAdd(prv_key_bytes, other_key_bytes);
-            Serialize(new_prv_key.ToStandardForm(), gsl::make_span(out, kElementSize));
+            Serialize(new_prv_key, gsl::make_span(out, kElementSize));
         } catch (const std::exception &e) {
             return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
         } catch (...) {
@@ -66,7 +93,7 @@ namespace starkware {
             const auto other_key_bytes = Deserialize(gsl::make_span(other_key, kElementSize));
 
             auto new_prv_key = SeckeyTweakMul(prv_key_bytes, other_key_bytes);
-            Serialize(new_prv_key.ToStandardForm(), gsl::make_span(out, kElementSize));
+            Serialize(new_prv_key, gsl::make_span(out, kElementSize));
         } catch (const std::exception &e) {
             return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
         } catch (...) {
@@ -78,6 +105,7 @@ namespace starkware {
     extern "C" int PubkeyParse(
             const gsl::byte pub[kMaxPubkeySize], size_t size, gsl::byte out[kPubkeySize]) {
         try {
+            std::cout << std::hex << pub << std::endl;
             auto pub_key = gsl::make_span(pub, size);
 
             auto new_pub_key = PubkeyParse(pub_key).value();

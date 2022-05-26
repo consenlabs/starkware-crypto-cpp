@@ -5,8 +5,9 @@
 #ifndef STARKWARECRYPTOLIB_FFI_ECKEY_H
 #define STARKWARECRYPTOLIB_FFI_ECKEY_H
 
-
+int SeckeyValidate(const char* private_key, char* out);
 int SeckeyNegate(const char* private_key, char* out);
+int SeckeyInvert(const char* private_key, char* out);
 int SeckeyTweakAdd(const char* private_key, const char* other_key, char* out);
 int SeckeyTweakMul(const char* private_key, const char* other_key, char* out);
 

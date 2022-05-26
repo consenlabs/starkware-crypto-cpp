@@ -15,13 +15,17 @@
 
 namespace starkware {
 
-    PrimeFieldElement SeckeyNegate(const PrimeFieldElement::ValueType &private_key);
+    using ValueType = PrimeFieldElement::ValueType;
 
-    PrimeFieldElement
-    SeckeyTweakAdd(const PrimeFieldElement::ValueType &private_key, const PrimeFieldElement::ValueType &other_key);
+    bool SeckeyValidate(const PrimeFieldElement::ValueType &private_key);
+    ValueType SeckeyNegate(const ValueType &private_key);
+    ValueType SeckeyInvert(const ValueType &private_key);
 
-    PrimeFieldElement
-    SeckeyTweakMul(const PrimeFieldElement::ValueType &private_key, const PrimeFieldElement::ValueType &other_key);
+    ValueType
+    SeckeyTweakAdd(const ValueType &private_key, const ValueType &other_key);
+
+    ValueType
+    SeckeyTweakMul(const ValueType &private_key, const ValueType &other_key);
 
     std::optional<EcPoint<PrimeFieldElement>>
     GetPointFromXBytes(const std::array<uint64_t, PrimeFieldElement::ValueType::LimbCount()> bytes);

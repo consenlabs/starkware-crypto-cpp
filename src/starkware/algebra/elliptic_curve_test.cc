@@ -12,6 +12,7 @@
 #include "starkware/algebra/prime_field_element.h"
 #include "starkware/utils/prng.h"
 #include "starkware/utils/test_utils.h"
+#include "starkware/crypto/elliptic_curve_constants.h"
 
 namespace starkware {
 namespace {
@@ -38,6 +39,25 @@ TEST(EllipticCurve, MulByScalarTest) {
 
   const EcPoint<PrimeFieldElement> point_times_5_b = point.MultiplyByScalar(0x5_Z, alpha);
   ASSERT_EQ(point_times_5_b, point.Double(alpha).Double(alpha) + point);
+}
+
+TEST(EllipticCurve, MulByScalarModeNTest) {
+    auto a = 0x07fb56a3668cd6dcdaf91d986675a1f3cacd66af4eced9f3791ea739934a752e_Z;
+    auto b = 0x03c16ceac5293e0bf8a29e5a628f567bf5cff88175f292a8e9c9ce07d3d8d489_Z;
+    const EcPoint<PrimeFieldElement> generator = {PrimeFieldElement::FromBigInt(0x49ee3eba8c1600700ee1b87eb599f16716b0b1022947733551fde4050ca6804_Z),
+                                                  PrimeFieldElement::FromBigInt(0x3ca0cfe4b3bc6ddf346d49d06ea0ed34e621062c0e056c1d0405d266e10268a_Z)};
+    const auto& alpha = PrimeFieldElement::FromBigInt(0x01_Z);
+    // There is always a beta such that {x,y} is a point on the curve y^2 = x^3 + alpha * x + beta.
+
+//    auto pa = PrimeFieldElement::FromBigInt(a);
+//    auto pb = PrimeFieldElement::FromBigInt(b);
+//    auto a_mul_b = (pa * pb).ToStandardForm();
+    auto a_mul_b = PrimeFieldElement::ValueType::MulMod(a, b, 0x800000000000010FFFFFFFFFFFFFFFFB781126DCAE7B2321E66A241ADC64D2F_Z);
+    auto a_mul_b_gen = generator.MultiplyByScalar(a_mul_b, alpha);
+
+    auto gen_mul_a = generator.MultiplyByScalar(a, alpha);
+    auto gen_mul_a_b = gen_mul_a.MultiplyByScalar(b, alpha);
+    ASSERT_EQ(a_mul_b_gen, gen_mul_a_b);
 }
 
 TEST(EllipticCurve, MulByZeroTest) {

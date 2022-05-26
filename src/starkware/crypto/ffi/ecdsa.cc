@@ -23,8 +23,8 @@ static_assert(kOutBufferSize >= kElementSize, "kOutBufferSize is not big enough"
 extern "C" int GetPublicKey(
     const gsl::byte private_key[kElementSize], gsl::byte out[kElementSize]) {
   try {
-    const auto stark_key = GetPublicKey(Deserialize(gsl::make_span(private_key, kElementSize))).x;
-    Serialize(stark_key.ToStandardForm(), gsl::make_span(out, kElementSize));
+    const auto stark_key = GetPublicKey(Deserialize(gsl::make_span(private_key, kElementSize)));
+    SerializePubkey(stark_key, gsl::make_span(out, kElementSize * 2));
   } catch (const std::exception& e) {
     return HandleError(e.what(), gsl::make_span(out, kOutBufferSize));
   } catch (...) {
