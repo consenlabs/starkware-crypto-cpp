@@ -65,9 +65,7 @@ namespace starkware {
                 auto pub_key = public_key_opt.value();
                 if ((int)gsl::at(pub, 0) == 3) {
                     auto y_value = pub_key.y.ToStandardForm()[0];
-                    std::cout << "first byte 3, y value before &: " << y_value << std::endl;
 
-                    std::cout << "first byte 3, y value after &: " << (y_value & 1ull) << std::endl;
                     if ((pub_key.y.ToStandardForm()[0] & 1ull) == 1ull) {
                         return public_key_opt;
                     } else {
@@ -76,9 +74,6 @@ namespace starkware {
                 }
                 if ((int)gsl::at(pub, 0) == 2) {
                     auto y_value = pub_key.y.ToStandardForm()[0];
-                    std::cout << "first byte: 2, y value before &: " << y_value << std::endl;
-
-                    std::cout << "first byte: 2, y value after &: " << (y_value & 1ull) << std::endl;
                     if ((pub_key.y.ToStandardForm()[0] & 1ull) == 0ull) {
                         return public_key_opt;
                     } else {

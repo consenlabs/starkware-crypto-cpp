@@ -105,7 +105,6 @@ namespace starkware {
     extern "C" int PubkeyParse(
             const gsl::byte pub[kMaxPubkeySize], size_t size, gsl::byte out[kPubkeySize]) {
         try {
-            std::cout << std::hex << pub << std::endl;
             auto pub_key = gsl::make_span(pub, size);
 
             auto new_pub_key = PubkeyParse(pub_key).value();
